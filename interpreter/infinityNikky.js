@@ -8,31 +8,54 @@ const SHEET_ACTION = {
 
 const KEY = {
   0: 0,
-  C1: "A",
-  D1: "S",
-  E1: "D",
-  F1: "F",
-  G1: "G",
-  A1: "H",
-  B1: "J",
-  C2: "Q",
-  D2: "W",
-  E2: "E",
-  F2: "R",
-  G2: "T",
-  A2: "Y",
-  B2: "U",
+  C1: "Z",
+  D1: "X",
+  E1: "C",
+  F1: "V",
+  G1: "B",
+  A1: "N",
+  B1: "M",
+
+  C2: "A",
+  D2: "S",
+  E2: "D",
+  F2: "F",
+  G2: "G",
+  A2: "H",
+  B2: "J",
+
+  C3: "Q",
+  D3: "W",
+  E3: "E",
+  F3: "R",
+  G3: "T",
+  A3: "Y",
+  B3: "U",
 };
 
 const CLICK_DELAY = 10;
 const SHARP_SLIDE_DELAY = 10;
 
-export default function (sheet, TIME) {
+const COORD_SHARP_START = "1663, 770";
+const COORD_SHARP_END = "1663, 580";
+
+export default function interpreter(data, instruments) {
+  let timeline = [];
+  instruments.forEach((instrument) => {
+    timeline.push(...createTimeline(data[instrument], data.TIME));
+  });
+  timeline.sort((c1, c2) => c1[1] - c2[1]);
+
+  return mapTimelineToScript(timeline, data.TIME);
+}
+
+function createTimeline(sheet, TIME) {
   const unitT = (60 * 1000) / TIME.SCORE_SPEED;
 
   let beatCount = 0;
   let timeline = [];
   sheet.forEach((note) => {
+    if (note[1] === 0) return;
     if (note[0] !== 0) {
       timeline.push([
         SHEET_ACTION.KEYDOWN,
@@ -55,16 +78,16 @@ export default function (sheet, TIME) {
         ]);
         timeline.push([
           SHEET_ACTION.SHARP_END,
-          (beatCount + note[1]) * unitT +
-            (note[3] || 0) +
-            TIME.SHARP_POSTDELAY,
+          (beatCount + note[1]) * unitT + (note[3] || 0) + TIME.SHARP_POSTDELAY,
         ]);
       }
     }
     beatCount += note[1];
   });
-  timeline.sort((c1, c2) => c1[1] - c2[1]);
+  return timeline;
+}
 
+function mapTimelineToScript(timeline, TIME) {
   let timestamp = 0;
   let script = `Delay ${TIME.START_DELAY}\n`;
   timeline.forEach((cmd) => {
@@ -77,10 +100,10 @@ export default function (sheet, TIME) {
         script += `KeyUp "${KEY[cmd[2]]}", 1\n`;
         break;
       case SHEET_ACTION.SHARP_START:
-        script += `MoveTo 1663, 770\nDelay ${CLICK_DELAY}\nLeftDown 1\nDelay ${SHARP_SLIDE_DELAY}\nMoveTo 1663, 580\n`;
+        script += `MoveTo ${COORD_SHARP_START}\nDelay ${CLICK_DELAY}\nLeftDown 1\nDelay ${SHARP_SLIDE_DELAY}\nMoveTo ${COORD_SHARP_END}\n`;
         break;
       case SHEET_ACTION.SHARP_END:
-        script += `Delay ${CLICK_DELAY}\nLeftUp 1\nMoveTo 1663, 770\n`;
+        script += `Delay ${CLICK_DELAY}\nLeftUp 1\nMoveTo ${COORD_SHARP_START}\n`;
         break;
       default:
         break;
