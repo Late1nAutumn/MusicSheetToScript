@@ -3,7 +3,7 @@ const DEFAULT_PREDELAY = 30;
 export default {
   TIME: {
     START_DELAY: 500,
-    SCORE_SPEED: 160,
+    SCORE_SPEED: 140,
   },
   // ["C1#", (beat), preDelay%, postDelay%],
   MAIN_FLUTE: [
