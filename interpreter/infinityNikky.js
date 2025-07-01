@@ -33,8 +33,8 @@ const KEY = {
   B3: "U",
 };
 
-const CLICK_DELAY = 10;
-const SHARP_SLIDE_DELAY = 10;
+const CLICK_DELAY = 20;
+const SHARP_SLIDE_DELAY = 20;
 
 const COORD_SHARP_START = "1690, 700";
 const COORD_SHARP_END = "1690, 500";
