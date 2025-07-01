@@ -36,8 +36,8 @@ const KEY = {
 const CLICK_DELAY = 10;
 const SHARP_SLIDE_DELAY = 10;
 
-const COORD_SHARP_START = "1663, 770";
-const COORD_SHARP_END = "1663, 580";
+const COORD_SHARP_START = "1690, 700";
+const COORD_SHARP_END = "1690, 500";
 
 export default function interpreter(data, instruments) {
   let timeline = [];
